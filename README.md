@@ -28,10 +28,10 @@ streamlit run streamlit_ui.py
 ## Run CLI Benchmark
 
 ```bash
-python cli_benchmark.py --data bengaluru_roads.csv --tests 50 --generate-plots
+python cli_benchmark.py --tests 50 --generate-plots
 ```
 
 ## Data
 
-- Place your `bengaluru_roads.csv` in the project root.
-- The API will auto-convert it to JSON for faster future loads.
+- Place your `central_bengaluru.graphml` (or your own GraphML file) in the project root.
+- The API will load the GraphML file directly for all features.
