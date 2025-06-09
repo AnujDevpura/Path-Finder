@@ -5,6 +5,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import requests
 import numpy as np
+from streamlit_plotly_events import plotly_events
 
 # Page config
 st.set_page_config(
@@ -65,28 +66,64 @@ def route_finder_tab():
 
     # Fetch available nodes from API
     nodes = get_nodes(API_BASE_URL)
-    node_options = [
-        f"{n['id']} | {n['lat']:.5f}, {n['lon']:.5f}" + (f" | {n['name']}" if n.get("name") else "")
-        for n in nodes
-    ]
-    node_id_map = {opt: n["id"] for opt, n in zip(node_options, nodes)}
+    df_nodes = pd.DataFrame(nodes)
 
-    col1, col2 = st.columns(2)
-    with col1:
-        src_option = st.selectbox("Select Source Node", node_options)
-    with col2:
-        dst_option = st.selectbox("Select Destination Node", node_options, index=1 if len(node_options) > 1 else 0)
+    # Plot all nodes on map
+    fig = go.Figure(go.Scattermapbox(
+        lat=df_nodes["lat"],
+        lon=df_nodes["lon"],
+        mode="markers",
+        marker=dict(size=8, color="blue"),
+        text=df_nodes["id"].astype(str),
+        customdata=df_nodes["id"],
+        name="Nodes"
+    ))
+    fig.update_layout(
+        mapbox_style="open-street-map",
+        mapbox_zoom=13,
+        mapbox_center={"lat": df_nodes["lat"].mean(), "lon": df_nodes["lon"].mean()},
+        height=500,
+        margin={"r":0,"t":0,"l":0,"b":0}
+    )
 
-    src_id = node_id_map[src_option]
-    dst_id = node_id_map[dst_option]
+    st.markdown("**Click on the map to select source and destination nodes.**")
+    selected_points = plotly_events(fig, click_event=True, select_event=False, override_height=500)
 
+    # Store selections in session state
+    if "src_id" not in st.session_state:
+        st.session_state["src_id"] = None
+    if "dst_id" not in st.session_state:
+        st.session_state["dst_id"] = None
+
+    if selected_points:
+        point_idx = selected_points[0].get("pointIndex")
+        if point_idx is not None:
+            node_id = int(df_nodes.iloc[point_idx]["id"])
+            if st.session_state["src_id"] is None:
+                st.session_state["src_id"] = node_id
+                st.success(f"Source node selected: {node_id}")
+            elif st.session_state["dst_id"] is None and node_id != st.session_state["src_id"]:
+                st.session_state["dst_id"] = node_id
+                st.success(f"Destination node selected: {node_id}")
+
+    # Show selected nodes
+    src_id = st.session_state["src_id"]
+    dst_id = st.session_state["dst_id"]
+    st.write(f"Source: {src_id}, Destination: {dst_id}")
+
+    # Add Reset Selection button
+    if st.button("Reset Selection"):
+        st.session_state["src_id"] = None
+        st.session_state["dst_id"] = None
+
+    # Algorithm selection and route finding
     algorithm = st.selectbox(
         "Select Algorithm",
         ["dijkstra", "dial", "astar", "bidirectional_astar"],
         index=0,
     )
 
-    if st.button("Find Route", type="primary"):
+    if src_id and dst_id and st.button("Find Route", type="primary"):
         with st.spinner("Finding optimal route..."):
             try:
                 # Get node details for lat/lon

@@ -179,114 +179,110 @@ class AStarPathFinder(PathFinder):
 
 class BidirectionalAStarPathFinder(PathFinder):
     """Bidirectional A* algorithm implementation"""
-    
+
+    _reverse_edges_cache = {}
+
     def __init__(self, graph: Graph, heuristic: str = 'haversine'):
         super().__init__(graph)
         self.heuristic = heuristic
-        
+        # Build reverse edges once per graph instance
+        if id(graph) not in BidirectionalAStarPathFinder._reverse_edges_cache:
+            reverse_edges = defaultdict(list)
+            for node_id, edges in graph.edges.items():
+                for edge in edges:
+                    reverse_edges[edge.to_node].append((node_id, edge.weight))
+            BidirectionalAStarPathFinder._reverse_edges_cache[id(graph)] = reverse_edges
+        self.reverse_edges = BidirectionalAStarPathFinder._reverse_edges_cache[id(graph)]
+
     def heuristic_distance(self, node1: int, node2: int) -> float:
-        """Calculate heuristic distance between two nodes"""
         if self.heuristic == 'haversine':
             return self.graph.haversine_distance(node1, node2)
         else:
             return self.graph.euclidean_distance(node1, node2)
-    
+
     def find_path(self, start: int, end: int) -> RouteResult:
         start_time = time.time()
         self.nodes_expanded = 0
-        
-        # Forward search data structures
+
         g_forward = {node_id: float('inf') for node_id in self.graph.nodes}
         g_forward[start] = 0
         f_forward = {start: self.heuristic_distance(start, end)}
         came_from_forward = {}
         open_forward = [(f_forward[start], start)]
         closed_forward = set()
-        
-        # Backward search data structures
+
         g_backward = {node_id: float('inf') for node_id in self.graph.nodes}
         g_backward[end] = 0
         f_backward = {end: self.heuristic_distance(end, start)}
         came_from_backward = {}
         open_backward = [(f_backward[end], end)]
         closed_backward = set()
-        
-        # Create reverse graph for backward search
-        reverse_edges = defaultdict(list)
-        for node_id, edges in self.graph.edges.items():
-            for edge in edges:
-                reverse_edges[edge.to_node].append((node_id, edge.weight))
-        
+
         best_path_length = float('inf')
         meeting_point = None
-        
+
+        expanded_nodes = set()  # To count unique expansions
+
         while open_forward and open_backward:
             # Forward step
             if open_forward:
                 f_curr, current_forward = heapq.heappop(open_forward)
-                
-                if current_forward not in closed_forward:
-                    closed_forward.add(current_forward)
-                    self.nodes_expanded += 1
-                    
-                    # Check if paths meet
-                    if current_forward in closed_backward:
-                        total_dist = g_forward[current_forward] + g_backward[current_forward]
-                        if total_dist < best_path_length:
-                            best_path_length = total_dist
-                            meeting_point = current_forward
-                    
-                    # Expand forward
-                    for edge in self.graph.get_neighbors(current_forward):
-                        neighbor = edge.to_node
-                        tentative_g = g_forward[current_forward] + edge.weight
-                        
-                        if tentative_g < g_forward[neighbor]:
-                            came_from_forward[neighbor] = current_forward
-                            g_forward[neighbor] = tentative_g
-                            f_score = tentative_g + self.heuristic_distance(neighbor, end)
-                            heapq.heappush(open_forward, (f_score, neighbor))
-            
+                if current_forward in closed_forward:
+                    continue
+                closed_forward.add(current_forward)
+                expanded_nodes.add(current_forward)
+
+                if current_forward in closed_backward:
+                    total_dist = g_forward[current_forward] + g_backward[current_forward]
+                    if total_dist < best_path_length:
+                        best_path_length = total_dist
+                        meeting_point = current_forward
+
+                for edge in self.graph.get_neighbors(current_forward):
+                    neighbor = edge.to_node
+                    tentative_g = g_forward[current_forward] + edge.weight
+                    if tentative_g < g_forward[neighbor]:
+                        came_from_forward[neighbor] = current_forward
+                        g_forward[neighbor] = tentative_g
+                        f_score = tentative_g + self.heuristic_distance(neighbor, end)
+                        heapq.heappush(open_forward, (f_score, neighbor))
+
             # Backward step
             if open_backward:
                 f_curr, current_backward = heapq.heappop(open_backward)
-                
-                if current_backward not in closed_backward:
-                    closed_backward.add(current_backward)
-                    self.nodes_expanded += 1
-                    
-                    # Check if paths meet
-                    if current_backward in closed_forward:
-                        total_dist = g_forward[current_backward] + g_backward[current_backward]
-                        if total_dist < best_path_length:
-                            best_path_length = total_dist
-                            meeting_point = current_backward
-                    
-                    # Expand backward
-                    for prev_node, weight in reverse_edges[current_backward]:
-                        tentative_g = g_backward[current_backward] + weight
-                        
-                        if tentative_g < g_backward[prev_node]:
-                            came_from_backward[prev_node] = current_backward
-                            g_backward[prev_node] = tentative_g
-                            f_score = tentative_g + self.heuristic_distance(prev_node, start)
-                            heapq.heappush(open_backward, (f_score, prev_node))
-            
-            # Early termination condition
-            if meeting_point and best_path_length < float('inf'):
-                break
-        
+                if current_backward in closed_backward:
+                    continue
+                closed_backward.add(current_backward)
+                expanded_nodes.add(current_backward)
+
+                if current_backward in closed_forward:
+                    total_dist = g_forward[current_backward] + g_backward[current_backward]
+                    if total_dist < best_path_length:
+                        best_path_length = total_dist
+                        meeting_point = current_backward
+
+                for prev_node, weight in self.reverse_edges[current_backward]:
+                    tentative_g = g_backward[current_backward] + weight
+                    if tentative_g < g_backward[prev_node]:
+                        came_from_backward[prev_node] = current_backward
+                        g_backward[prev_node] = tentative_g
+                        f_score = tentative_g + self.heuristic_distance(prev_node, start)
+                        heapq.heappush(open_backward, (f_score, prev_node))
+
+            # Improved early termination
+            if open_forward and open_backward:
+                min_f = min(open_forward[0][0], open_backward[0][0])
+                if best_path_length <= min_f:
+                    break
+
         runtime = (time.time() - start_time) * 1000
-        
+        self.nodes_expanded = len(expanded_nodes)
+
         if meeting_point:
-            # Reconstruct path from both directions
             forward_path = self.reconstruct_path(came_from_forward, meeting_point)
             backward_path = self.reconstruct_path(came_from_backward, meeting_point)
             backward_path.reverse()
-            
-            # Combine paths (remove duplicate meeting point)
             full_path = forward_path + backward_path[1:]
-            
             return RouteResult(full_path, best_path_length, self.nodes_expanded, runtime, 'bidirectional_astar')
-        
+
         return RouteResult([], float('inf'), self.nodes_expanded, runtime, 'bidirectional_astar')
