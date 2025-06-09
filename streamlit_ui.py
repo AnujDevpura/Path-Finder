@@ -5,8 +5,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import requests
 import numpy as np
-from streamlit_plotly_events import plotly_events
-
+from streamlit_plotly_events import plotly_events  # type: ignore
 # Page config
 st.set_page_config(
     page_title="City-Scale Path Finder",

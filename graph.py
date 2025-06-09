@@ -1,4 +1,4 @@
-import osmnx as ox
+import osmnx as ox  # type: ignore
 import networkx as nx
 import matplotlib.pyplot as plt
 
