@@ -119,7 +119,7 @@ The project is designed with a modern, decoupled, multi-layered architecture, en
 
 \begin{figure}[h!]
     \centering
-    \fbox{\rule{0pt}{4in}\rule{0.9\linewidth}{0pt}}
+    \includegraphics[width=0.9\linewidth]{figures/architecture.png}
     \caption{High-level System Architecture Diagram showing the four layers and their interactions.}
     \label{fig:arch}
 \end{figure}
@@ -236,7 +236,7 @@ Dijkstra's algorithm finds the shortest path from a source node to all other nod
 
 \begin{figure}[h!]
     \centering
-    \fbox{\rule{0pt}{3in}\rule{0.9\linewidth}{0pt}}
+    \includegraphics[width=0.5\linewidth]{figures/dijkstra_flowchart.png}
     \caption{Flowchart for Dijkstra's Algorithm.}
     \label{fig:dijkstra_flow}
 \end{figure}
@@ -247,7 +247,7 @@ class DijkstraPathFinder(PathFinder):
         start_time = time.time()
         self.nodes_expanded = 0
         
-        distances = {node_id: float('inf') for node_id in self.graph.nodes}
+        distances = {node_id: float('inf') for node in self.graph.nodes}
         distances[start] = 0
         came_from = {}
         
@@ -312,9 +312,9 @@ A* is an informed search algorithm and an extension of Dijkstra's. It improves p
 
 \begin{figure}[h!]
     \centering
-    \fbox{\rule{0pt}{3in}\rule{0.9\linewidth}{0pt}}
-    \caption{Diagram illustrating A* search, showing how the heuristic guides the search space (ellipse) towards the target, unlike Dijkstra's which expands in a circle.}
-    \label{fig:astar_diag}
+    \includegraphics[width=0.9\linewidth]{figures/theoretical_performance_scaling.png}
+    \caption{Theoretical performance scaling of Dijkstra's, A*, and Bidirectional A* algorithms as a function of graph size.}
+    \label{fig:theoretical_scaling}
 \end{figure}
 
 \begin{lstlisting}[language=Python, caption={Code Snippet: `AStarPathFinder' from `algorithms.py'}, label={lst:astar}]
@@ -451,7 +451,7 @@ The user interface is a web application built with Streamlit. It provides an int
 
 \begin{figure}[h!]
     \centering
-    \fbox{\rule{0pt}{3in}\rule{0.9\linewidth}{0pt}}
+    \includegraphics[width=0.9\linewidth]{figures/streamlit_ui.png}
     \caption{Screenshot of the Streamlit UI, showing the map for node selection and the algorithm dropdown.}
     \label{fig:ui}
 \end{figure}
@@ -476,7 +476,7 @@ The "Benchmark" tab allows users to trigger the server-side benchmark:
 
 \begin{figure}[h!]
     \centering
-    \fbox{\rule{0pt}{3in}\rule{0.9\linewidth}{0pt}}
+    \includegraphics[width=0.9\linewidth]{figures/benchmark_tab.png}
     \caption{Screenshot of the Benchmark tab results, showing the summary table and comparison charts.}
     \label{fig:benchmark_ui}
 \end{figure}
@@ -528,14 +528,14 @@ The following table summarizes the results of a benchmark run with $N=50$ random
 
 \begin{figure}[h!]
     \centering
-    \fbox{\rule{0pt}{3in}\rule{0.9\linewidth}{0pt}}
+    \includegraphics[width=0.5\linewidth]{figures/runtime_bar_chart.png}
     \caption{Bar chart comparing Average Runtime across all algorithms.}
     \label{fig:runtime_chart}
 \end{figure}
 
 \begin{figure}[h!]
     \centering
-    \fbox{\rule{0pt}{3in}\rule{0.9\linewidth}{0pt}}
+    \includegraphics[width=0.5\linewidth]{figures/nodes_expanded_bar_chart.png}
     \caption{Bar chart comparing Average Nodes Expanded across all algorithms.}
     \label{fig:nodes_chart}
 \end{figure}
