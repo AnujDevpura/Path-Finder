@@ -49,7 +49,7 @@
 \maketitle
 
 \begin{abstract}
-Urban navigation systems require efficient pathfinding algorithms to handle real-time routing queries on large-scale road networks. This paper presents a comprehensive performance analysis of four fundamental pathfinding algorithms: Dijkstra's algorithm, Dial's algorithm, A* search, and Bidirectional A* search, implemented on a realistic urban road network of Central Bengaluru containing 2,661 nodes and 6,414 edges. Through empirical evaluation using 100 randomized test cases and an interactive simulation framework, we demonstrate significant performance variations across algorithms. Our results show that Bidirectional A* achieves superior performance with an average runtime of 5.02ms and explores only 717 nodes on average, representing a 15.5× speedup and 17.3× reduction in search space compared to Dijkstra's algorithm. Additionally, we introduce a novel web-based simulation platform that enables real-time visualization and comparative analysis of pathfinding algorithms, providing educational and research value. The study provides insights into algorithm selection criteria for different urban routing scenarios and validates theoretical complexity predictions through practical implementation.
+Urban navigation systems require efficient pathfinding algorithms to handle real-time routing queries on large-scale road networks. This paper presents a comprehensive performance analysis of four fundamental pathfinding algorithms: Dijkstra's algorithm, Dial's algorithm, A* search, and Bidirectional A* search, implemented on a realistic urban road network of Central Bengaluru containing 2,661 nodes and 6,414 edges. Through empirical evaluation using 100 randomized test cases and an interactive simulation framework, we demonstrate significant performance variations across algorithmsOur findings demonstrate that Bidirectional A* consistently outperforms with an average runtime of 5.02ms and explores only 717 nodes on average, representing a 15.5× speedup and 17.3× reduction in search space compared to Dijkstra's algorithm. Additionally, we introduce a novel web-based simulation platform that enables real-time visualization and comparative analysis of pathfinding algorithms, providing educational and research value. This study offers valuable insights into choosing the right algorithms for different urban routing scenarios and validates theoretical complexity predictions through practical implementation.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -62,7 +62,7 @@ The exponential growth of urban transportation demands has necessitated the deve
 
 Classical graph traversal algorithms like Dijkstra's algorithm provide optimal solutions but suffer from computational overhead when applied to large urban networks. Heuristic-based approaches such as A* search and advanced techniques like bidirectional search have emerged as viable alternatives, offering improved performance through informed search strategies \cite{hart1968formal}. However, the practical performance characteristics of these algorithms on real-world urban networks remain understudied, particularly in the context of Indian metropolitan areas.
 
-This research contributes a systematic empirical analysis of four prominent pathfinding algorithms on a real-world urban road network, accompanied by an interactive simulation framework for educational and research purposes. Unlike previous studies that focus on theoretical complexity analysis or synthetic datasets, our work provides practical performance metrics obtained from implementation on OpenStreetMap data of Central Bengaluru, India.
+This research contributes a systematic empirical analysis of four prominent pathfinding algorithms on a real-world urban road network, accompanied by an interactive simulation framework for educational and research purposes. In contrast to earlier research centered on theoretical complexity analysis or synthetic datasets, our work provides practical performance metrics obtained from implementation on OpenStreetMap data of Central Bengaluru, India.
 
 The primary contributions of this paper include:
 \begin{itemize}
@@ -80,7 +80,7 @@ Pathfinding in urban networks has been extensively studied from both theoretical
 
 \subsection{Classical Algorithms}
 
-Dijkstra's algorithm remains the gold standard for shortest path computation, guaranteeing optimal solutions with O(E log V) complexity using binary heaps \cite{cormen2009introduction}. Dial's algorithm \cite{dial1969algorithm} introduced bucket-based optimization for graphs with bounded integer edge weights, achieving O(E + C·V) complexity where C represents the maximum edge weight.
+Dijkstra's algorithm remains the gold standard for shortest path computation, guaranteeing optimal solutions with O(E log V) complexity using binary heaps \cite{cormen2009introduction}. Dial's algorithm \cite{dial1969algorithm} introduced bucket-based optimization for graphs with limited integer edge weights, achieving O(E + C·V) complexity where C represents the maximum edge weight.
 
 The A* algorithm \cite{hart1968formal} revolutionized pathfinding by introducing heuristic guidance to reduce search space exploration. Pohl's bidirectional search \cite{pohl1971bidirectional} demonstrated that simultaneous forward and backward searches could achieve quadratic improvements in node expansion, particularly effective for long-distance queries.
 
@@ -92,11 +92,11 @@ Hub labeling techniques \cite{abraham2011hub} and customizable route planning \c
 
 \subsection{Urban Network Characteristics}
 
-Urban road networks exhibit unique characteristics that differentiate them from theoretical graph models. Jiang and Claramunt \cite{jiang2004topological} analyzed the topological properties of urban networks, revealing scale-free and small-world characteristics that impact pathfinding performance. Porta et al. \cite{porta2006network} demonstrated that urban networks exhibit spatial clustering and hierarchical organization, suggesting opportunities for specialized optimization techniques.
+Urban road networks possess distinct features that set them apart from theoretical graph models. Jiang and Claramunt \cite{jiang2004topological} analyzed the topological properties of urban networks, revealing scale-free and small-world characteristics that impact pathfinding performance. Porta et al. \cite{porta2006network} demonstrated that urban networks exhibit spatial clustering and hierarchical organization, suggesting opportunities for specialized optimization techniques.
 
 \subsection{Performance Evaluation Methodologies}
 
-Previous performance studies have primarily focused on synthetic networks or limited real-world datasets. Zeng and Church \cite{zeng2012comparative} conducted comparative analysis on road networks but with limited algorithm scope. Our work extends this research by providing comprehensive analysis on dense urban networks with statistical rigor and interactive visualization capabilities.
+Previous performance studies have primarily focused on synthetic networks or limited real-world datasets. Zeng and Church \cite{zeng2012comparative} conducted comparative analysis on road networks but with limited algorithm scope. Our work builds upon this research, offering a thorough analysis of dense urban networks with statistical rigor and interactive visualization capabilities.
 
 \section{Methodology}
 
@@ -104,7 +104,7 @@ Previous performance studies have primarily focused on synthetic networks or lim
 
 The urban road network is modeled as a weighted directed graph G = (V, E), where vertices represent intersections and edges represent road segments. The dataset comprises Central Bengaluru's road network with |V| = 2,661 nodes and |E| = 6,414 edges, extracted from OpenStreetMap using the OSMnx Python library.
 
-Edge weights correspond to Euclidean distances in meters between consecutive intersections, calculated using geographic coordinates. The graph is guaranteed to be connected through extraction of the largest connected component, ensuring path existence between any two vertices. Additional network statistics include:
+Edge weights correspond to Euclidean distances in meters between consecutive intersections, calculated using geographic coordinates. The graph is guaranteed to be connected through the extraction of the largest connected component, ensuring the existence of a path between any two vertices. Additional network statistics include:
 
 \begin{itemize}
 \item Average node degree: 4.82
@@ -148,7 +148,7 @@ The classical single-source shortest path algorithm maintains a priority queue o
 \end{algorithm}
 
 \subsubsection{Dial's Algorithm}
-An optimization of Dijkstra's algorithm for graphs with bounded integer edge weights. Our implementation discretizes continuous geographic distances into 100-meter buckets to maintain reasonable memory usage while preserving algorithmic advantages.
+An optimization of Dijkstra's algorithm specifically suited for graphs with limited integer edge weights. Our implementation discretizes continuous geographic distances into 100-meter buckets to maintain reasonable memory usage while preserving algorithmic advantages.
 
 \subsubsection{A* Search Algorithm}
 An informed search algorithm that uses a heuristic function h(n) to guide exploration toward the goal. The evaluation function f(n) = g(n) + h(n) combines the known cost g(n) from start to current node with the heuristic estimate h(n) from current node to goal. We employ the Haversine distance as an admissible and consistent heuristic for geographic coordinates.
@@ -173,7 +173,7 @@ Our implementation includes several optimizations:
 
 \subsection{Experimental Setup}
 
-Performance evaluation was conducted using multiple experimental configurations to ensure comprehensive analysis:
+Performance was assessed using multiple experimental configurations to ensure comprehensive analysis:
 
 \subsubsection{Basic Performance Testing}
 100 randomly generated source-destination pairs from the graph vertices, ensuring statistical significance with 95\% confidence intervals. Each algorithm was executed on identical test cases to ensure fair comparison.
@@ -189,7 +189,7 @@ Test cases were categorized into three distance ranges:
 \subsubsection{Scalability Testing}
 Performance evaluation on subgraphs of varying sizes (500, 1000, 1500, 2000+ nodes) to analyze algorithmic scalability characteristics.
 
-The following metrics were measured for each test case:
+The following metrics were recorded for every test scenario:
 \begin{itemize}
 \item \textbf{Runtime}: Wall-clock execution time in milliseconds with microsecond precision
 \item \textbf{Nodes Expanded}: Number of vertices explored during search
@@ -198,7 +198,7 @@ The following metrics were measured for each test case:
 \item \textbf{Success Rate}: Percentage of successful path discoveries
 \end{itemize}
 
-All experiments were conducted on a standardized computing environment (Intel Core i7-9750H, 16GB RAM, Python 3.9) to minimize system-dependent variations. Each test case was executed multiple times with the median value reported to reduce measurement noise.
+All experiments were conducted on a standardized computing environment (Intel Core i7-9750H, 16GB RAM, Python 3.9) to minimize system-dependent variations. Each test scenario was executed repeatedly, and the median result was recorded to minimize measurement fluctuations.
 
 \section{Interactive Simulation Framework}
 
@@ -236,7 +236,7 @@ Efficient graph representation and manipulation with:
 
 \subsection{Educational Features}
 
-The simulation platform includes several features designed for educational use:
+The simulation platform incorporates multiple features specifically designed for educational use:
 
 \begin{itemize}
 \item \textbf{Algorithm Visualization}: Step-by-step execution showing node expansion, priority queue states, and path construction
@@ -249,7 +249,7 @@ The simulation platform includes several features designed for educational use:
 
 \subsection{Comprehensive Performance Metrics}
 
-Table \ref{tab:performance} presents the comprehensive performance analysis across all four algorithms. The results demonstrate clear performance hierarchies aligned with theoretical expectations, with statistical significance confirmed through ANOVA testing (p < 0.001).
+Table \ref{tab:performance} displays the comprehensive performance analysis across all four algorithms. The results demonstrate clear performance hierarchies aligned with theoretical expectations, with statistical significance confirmed through ANOVA testing (p < 0.001).
 
 \begin{table}[htbp]
 \caption{Performance Comparison of Pathfinding Algorithms (N=100)}
@@ -320,13 +320,13 @@ Bidirectional A* & 3.1 ± 1.8 & 4.9 ± 2.4 & 7.8 ± 4.1 \\
 
 \subsection{Runtime Performance Analysis}
 
-Bidirectional A* demonstrates exceptional runtime performance, achieving an average execution time of 5.02ms with remarkably low variance (σ = 5.70ms). This represents a 15.5× improvement over Dijkstra's algorithm and a 13.8× improvement over A* search. The superior performance remains consistent across all distance ranges, with the most significant advantages observed for long-distance queries where the bidirectional approach can effectively reduce the search radius.
+Bidirectional A* demonstrates exceptional runtime performance, achieving an average execution time of 5.02ms with remarkably low variance (σ = 5.70ms). This represents a 15.5× improvement over Dijkstra's algorithm and a 13.8× improvement over A* search. The superior performance is consistently observed across varying distance ranges, with the most significant advantages observed for long-distance queries where the bidirectional approach can effectively reduce the search radius.
 
 The coefficient of variation (CV = σ/μ) analysis reveals that Bidirectional A* has the most consistent performance (CV = 1.14), followed by A* (CV = 1.50), Dijkstra (CV = 1.32), and Dial (CV = 0.92). This consistency is crucial for production systems with service-level agreements.
 
-A* search shows moderate improvement over Dijkstra's algorithm with 11.3\% reduction in average runtime. However, the improvement is less pronounced than expected due to the relatively dense urban network structure where heuristic guidance provides limited pruning benefits in short to medium distance queries.
+A* search shows moderate improvement over Dijkstra's algorithm with 11.3\% reduction in average runtime. However, the improvement is less evident than initially anticipated because of the relatively dense urban network structure where heuristic guidance provides limited pruning benefits in short to medium distance queries.
 
-Surprisingly, Dial's algorithm exhibits the worst runtime performance despite theoretical advantages for bounded integer weights. This counterintuitive result stems from several factors:
+Surprisingly, Dial's algorithm exhibits the worst runtime performance despite theoretical advantages for bounded integer weights. This counterintuitive finding arises from several contributing factors:
 \begin{itemize}
 \item Continuous nature of geographic distances requiring discretization
 \item Bucket management overhead exceeding heap operation costs
@@ -466,7 +466,7 @@ Key findings include:
 
 The practical implications extend beyond academic research to real-world navigation systems, where sub-second response times are critical for user experience and system scalability. The interactive simulation platform enables continued research and education in computational urban mobility.
 
-Future work will focus on dynamic routing scenarios, multi-modal transportation networks, and scalability analysis across diverse urban topologies. The findings contribute to the growing body of knowledge in computational urban mobility and provide practical guidance for navigation system developers facing the challenges of modern smart city infrastructure.
+Future research will address dynamic routing cases and incorporate multi-modal transportation networks, and scalability analysis across diverse urban topologies. The findings contribute to the growing body of knowledge in computational urban mobility and provide practical guidance for navigation system developers facing the challenges of modern smart city infrastructure.
 
 This research demonstrates the importance of empirical analysis in algorithm evaluation and highlights the value of interactive educational tools in advancing understanding of complex algorithmic systems. The combination of rigorous experimental methodology with accessible visualization creates a foundation for continued innovation in urban pathfinding research.
 
